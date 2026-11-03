@@ -1,0 +1,239 @@
+/* COPIED from server/static/me/me.css by server/scripts/sync_player_site.py (W44b): edit that file, then run
+   the script. Picture paths point at this folder's art/. */
+/* MY TABLE WARS phone pages (W24, built from the APPROVED mockups docs/design/profiles-v2/ph-*.html and their
+   phone.css, Austin 2026-10-29). The /tv shell's look at phone size: its tokens and self-hosted fonts, the Ruby & Gold
+   frames, the brushed-gold plates, the seat squares, Metal Mania titles. OFFLINE: every file comes from this box.
+   docs/ux/UX-RULES.md section 8: one column, 16 px smallest text, 48 px smallest tap target, 3 bottom tabs,
+   the first screen fits without scrolling. Below the mockup CSS (paths made absolute): the build's additions. */
+:root {
+  --void:#07080d; --stage:#0d1020; --steel:#1a2036; --line:#2b3354; --text:#f3f5ff; --dim:#b4bcdc;
+  --brass:#ffcb3d; --hot:#ff3b3b;
+  --p1:#3B82F6; --p2:#EC4899; --p3:#FBBF24; --p4:#22C55E;
+  --display:"Metal Mania", "Anton", Impact, sans-serif;
+  --label:"Teko", "Anton", "Arial Narrow", sans-serif;
+  --body:"Inter", "Helvetica Neue", Arial, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --gold:#c99a2e url('art/brushed-gold.webp') center/300px;
+}
+* { box-sizing:border-box; margin:0; }
+html { background:var(--void); }
+body { min-height:100vh; color:var(--text); font:400 16px/1.45 var(--body); overflow-x:hidden;
+  background:#07080d url('art/concrete-black.webp') center top/400px; position:relative; }
+body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; background:
+  radial-gradient(60% 40% at 50% 18%, rgba(120,140,255,.14), transparent 70%),
+  radial-gradient(90% 70% at 50% 40%, rgba(7,8,13,.2), rgba(7,8,13,.72)); }
+/* one column; on a wide screen it stays phone-wide in the middle */
+.pg { position:relative; z-index:1; max-width:430px; margin:0 auto; padding:14px 16px 28px; display:flex; flex-direction:column; gap:16px; }
+.pg.tabbed { padding-bottom:96px; }
+.sample { position:absolute; right:10px; top:4px; font:600 11px/1 var(--mono); color:rgba(255,255,255,.5); white-space:nowrap; z-index:3; }
+
+/* TITLE top-left: the bug (TV: .bug), brushed-gold TABLE WARS + the steel page name */
+.bug { display:flex; align-items:stretch; height:42px; font:600 27px/1 var(--label); letter-spacing:.06em; white-space:nowrap; margin:10px 0 0 6px; }
+.bug b { background:var(--gold); color:#1a1300; padding:0 12px; display:flex; align-items:center; transform:skewX(-12deg); font-weight:600; }
+.bug span { background:var(--steel); padding:0 14px; display:flex; align-items:center; transform:skewX(-12deg); margin-left:4px; color:var(--text); }
+.bug b > i, .bug span > i { transform:skewX(12deg); font-style:normal; padding-top:3px; }
+.where { font:500 16px/1.4 var(--body); color:var(--dim); }
+.where em { font-style:normal; color:var(--brass); font-weight:600; }
+.hl { font:400 40px/1.05 var(--display); text-transform:uppercase; letter-spacing:.02em; text-align:center; }
+.metal { background:linear-gradient(180deg, #fff6d6 0%, #ffd35a 38%, #b4720f 52%, #ffe08a 70%, #8a4b05 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 2px 0 #1a0a00) drop-shadow(0 0 10px rgba(255,60,20,.55)); }
+.line { font:500 17px/1.45 var(--body); color:var(--text); text-align:center; }
+.line b { color:var(--brass); font-weight:700; }
+.line.dim { color:var(--dim); }
+
+/* BOTTOM TABS: at most 4 (here 3), the shell's skewed plates; the lit one is brushed gold */
+.tabs { position:fixed; left:0; right:0; bottom:0; z-index:5; background:#0d1020; border-top:3px solid var(--brass); padding:8px 16px calc(8px + env(safe-area-inset-bottom, 0px)); }
+.tabs nav { max-width:398px; margin:0 auto; display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+.tabs a { display:flex; align-items:center; justify-content:center; height:52px; background:var(--steel); color:var(--text); transform:skewX(-12deg);
+  font:600 22px/1 var(--label); letter-spacing:.08em; text-decoration:none; white-space:nowrap; box-shadow:inset 0 0 0 1px var(--line); }
+.tabs a > i { transform:skewX(12deg); font-style:normal; padding-top:3px; }
+.tabs a.on { background:var(--gold); color:#1a1300; box-shadow:none; }
+
+/* BUTTONS (TV .btn): ONE primary = gold-filled; secondary = outlined; danger = red edge */
+.btn { display:flex; align-items:center; justify-content:center; gap:10px; min-height:56px; padding:9px 18px 5px; border:6px solid transparent;
+  border-image:url('art/rubygold-frame-bevel.webp') 34 / 6px / 0 stretch; border-radius:9px; background:#0d1020; background-clip:padding-box;
+  font:600 26px/1 var(--label); letter-spacing:.1em; text-transform:uppercase; color:#ffe6a6; white-space:nowrap; text-align:center; }
+.btn img { height:18px; width:auto; flex:none; margin-top:-4px; }
+.btn.primary { background:var(--gold); background-clip:padding-box; color:#1a1300; box-shadow:0 0 0 2px var(--brass), 0 0 16px rgba(255,203,61,.5); }
+.btn.sm { min-height:48px; min-width:48px; padding:6px 14px 2px; font-size:21px; border-width:4px; border-image-width:4px; }
+.btn.hot { color:#fff; border-image:none; border:3px solid var(--hot); box-shadow:0 0 14px rgba(255,59,59,.45); }
+.btn.hot.armed { background:color-mix(in srgb, var(--hot) 30%, #0d1020); }
+.btn .n { font:800 18px/1 var(--mono); background:var(--hot); color:#fff; border-radius:12px; padding:4px 8px 3px; margin-top:-3px; }
+.btns { display:flex; flex-direction:column; gap:12px; }
+.btns.two { flex-direction:row; } .btns.two > * { flex:1 1 0; min-width:0; }
+.tap { display:flex; align-items:center; justify-content:center; min-height:48px; font:600 17px/1 var(--body); color:var(--brass); text-decoration:underline; text-underline-offset:4px; }
+.backrow { display:flex; justify-content:flex-start; }
+
+/* BOARDS (TV: the results board + its brushed-gold title + rows) */
+.board { background:#0d1020; border:6px solid transparent; border-image:url('art/rubygold-frame-round.webp') 34 / 6px / 0 stretch; border-radius:8px; overflow:hidden; }
+.rbtitle { background:var(--gold); color:#1a1300; display:flex; align-items:center; justify-content:space-between; gap:8px; font:600 22px/1 var(--label); letter-spacing:.1em; padding:9px 12px 5px; text-transform:uppercase; white-space:nowrap; }
+.rbtitle .c { font:800 17px/1 var(--mono); margin-top:-3px; }
+.row { display:grid; grid-template-columns:minmax(0, 1fr) auto; gap:10px; align-items:center; padding:10px 12px; border-top:1px solid var(--line); min-height:68px; }
+.rbtitle + .row { border-top:0; }
+.row b { display:block; font:600 24px/1 var(--label); letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; padding-top:3px; }
+.row small { display:block; font:500 16px/1.35 var(--body); color:var(--dim); margin-top:2px; }
+.row small em { font-style:normal; color:var(--brass); font-weight:600; }
+.row .acts { display:flex; gap:8px; }
+.row.lit { background:color-mix(in srgb, var(--brass) 12%, #0d1020); box-shadow:inset 4px 0 0 var(--brass); }
+.more { display:flex; align-items:center; justify-content:center; min-height:52px; border-top:1px solid var(--line); font:600 20px/1 var(--label); letter-spacing:.1em; color:var(--brass); }
+
+/* RANK: always labelled; the tier on the brushed-gold plate */
+.tierp { display:inline-flex; align-items:center; justify-content:center; background:var(--gold); color:#1a1300; font:600 20px/1 var(--label); letter-spacing:.16em;
+  padding:6px 9px 2px 11px; border-radius:4px; white-space:nowrap; }
+.tierp.wait { background:var(--steel); color:var(--text); box-shadow:inset 0 0 0 1px var(--line); }
+.rk { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.rk .lbl { font:600 20px/1 var(--label); letter-spacing:.1em; color:var(--brass); padding-top:3px; white-space:nowrap; }
+.rec { font:600 17px/1.2 var(--body); font-variant-numeric:tabular-nums; color:var(--text); white-space:nowrap; }
+.rec.dim { color:var(--dim); font-weight:500; }
+
+/* SEAT SQUARES (TV: WHO'S IN? .slot) */
+.seats { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 6px; }
+.seat { position:relative; min-height:176px; border-radius:8px; border:7px solid transparent;
+  border-image:url('art/rubygold-frame-round.webp') 34 / 7px / 0 stretch;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--c) 34%, #0d1020), #0d1020 75%);
+  box-shadow:0 0 18px color-mix(in srgb, var(--c) 45%, transparent), inset 0 0 0 2px var(--c);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; transform:skewX(-4deg); padding:10px 6px; }
+.seat > * { transform:skewX(4deg); }
+.seat .puck { width:52px; aspect-ratio:1; border-radius:50%; border:8px solid var(--c); box-shadow:0 0 16px var(--c), inset 0 0 10px var(--c); margin-bottom:6px; }
+.seat .pn { font:700 44px/.9 var(--label); color:var(--c); text-shadow:0 3px 0 #000; }
+.seat .name { font:600 26px/1 var(--label); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; padding-top:4px; }
+.seat.taken { filter:saturate(.5) brightness(.7); box-shadow:inset 0 0 0 2px var(--c); }
+.s1 { --c:var(--p1); } .s2 { --c:var(--p2); } .s3 { --c:var(--p3); } .s4 { --c:var(--p4); }
+
+/* MY CARD's name card (TV: the versus card .vcard), lit in the colour of the seat I sit at */
+.vcard { border:6px solid transparent; border-image:url('art/rubygold-frame-round.webp') 34 / 6px / 0 stretch; display:flex; align-items:center; gap:14px;
+  background:linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, #0d1020), #0d1020); padding:12px 18px 10px 14px; border-radius:6px; transform:skewX(-6deg); margin:0 6px; }
+.vcard > * { transform:skewX(6deg); }
+.vcard > div { min-width:0; }
+.vcard i { width:52px; height:52px; border-radius:50%; border:9px solid var(--c); box-shadow:0 0 16px var(--c); flex:none; }
+.vcard small { display:block; font:500 16px/1.25 var(--body); color:var(--text); white-space:nowrap; }
+.vcard b { display:block; margin-top:2px; font:400 36px/1.1 var(--display); text-transform:uppercase; letter-spacing:.03em; white-space:nowrap; }
+/* the best rank, big, labelled RANK */
+.best { display:flex; flex-direction:column; align-items:center; gap:8px; padding:14px 12px 16px; text-align:center; }
+.best .lbl { font:600 24px/1 var(--label); letter-spacing:.12em; color:var(--brass); }
+.best .tierp { font-size:30px; padding:8px 18px 3px 22px; letter-spacing:.22em; }
+
+/* MY GAMES rows: game art, name, RANK (or the words), the record in the rule's format */
+.game { display:grid; grid-template-columns:64px minmax(0, 1fr); gap:12px; align-items:center; padding:12px; border-top:1px solid var(--line); }
+.rbtitle + .game { border-top:0; }
+.game img { width:64px; height:40px; object-fit:cover; object-position:top; border-radius:4px; display:block; }
+.game b { display:block; font:600 24px/1 var(--label); letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; padding-top:3px; }
+.game .rk { margin-top:5px; }
+.game .words { display:block; font:500 16px/1.35 var(--body); color:var(--text); margin-top:4px; }
+
+/* fields (TV: the WHO'S PLAYING? quadrant) */
+.field { background:#0d1020; border:6px solid transparent; border-image:url('art/rubygold-frame-round.webp') 34 / 6px / 0 stretch; box-shadow:inset 0 0 0 2px var(--c, var(--line));
+  padding:10px 14px 12px; display:flex; flex-direction:column; gap:6px; }
+.field .qh { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+.field .qh b { font:600 22px/1 var(--label); letter-spacing:.08em; color:var(--c, var(--brass)); padding-top:3px; }
+.field .qh span { font:700 16px/1 var(--mono); color:var(--dim); white-space:nowrap; }
+.typed { font:600 32px/1.3 var(--label); letter-spacing:.08em; min-height:48px; padding-top:4px; border-bottom:2px solid var(--line); white-space:nowrap; text-transform:uppercase; }
+.typed .caret { color:var(--c, var(--brass)); }
+.field .rule { font:500 16px/1.4 var(--body); color:var(--dim); }
+.field .rule.ok { color:var(--p4); }
+/* the tick: the whole row is the tap target */
+.tick { display:grid; grid-template-columns:36px minmax(0, 1fr); gap:12px; align-items:center; min-height:56px; padding:4px 6px; }
+.tick > i { width:36px; height:36px; border-radius:5px; background:var(--steel); box-shadow:inset 0 0 0 2px var(--line); display:flex; align-items:center; justify-content:center;
+  font:800 22px/1 var(--body); font-style:normal; color:#1a1300; }
+.tick > i.on { background:var(--gold); box-shadow:0 0 12px rgba(255,203,61,.5); }
+.tick b { display:block; font:600 24px/1 var(--label); letter-spacing:.06em; text-transform:uppercase; padding-top:3px; }
+/* ON / OFF: two skewed plates */
+.toggle { display:grid; grid-template-columns:1fr 1fr; gap:6px; width:132px; }
+.toggle span { display:flex; align-items:center; justify-content:center; height:48px; background:var(--steel); color:var(--text); transform:skewX(-12deg); box-shadow:inset 0 0 0 1px var(--line);
+  font:600 22px/1 var(--label); letter-spacing:.12em; }
+.toggle span > i { transform:skewX(12deg); font-style:normal; padding-top:3px; }
+.toggle span.on { background:var(--gold); color:#1a1300; box-shadow:none; }
+
+/* the friend QR (TV: the lobby QR's white plate) */
+.qrwrap { display:flex; flex-direction:column; align-items:center; gap:12px; padding:18px 12px 16px; }
+.qrwrap .plate { background:#fff; padding:12px; border-radius:6px; }
+.qrwrap img { display:block; width:200px; height:200px; image-rendering:pixelated; }
+
+/* GAME CARDS (TV: the picker .tile: the game's own art + a solid name band); at most 4 on a choice screen */
+.tiles { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:12px; }
+.tile { position:relative; aspect-ratio:16/10; border-radius:6px; overflow:hidden; background:#000; }
+.tile .art { position:absolute; inset:0 0 36px; background-size:cover; background-position:top; opacity:.8; }
+.tile .nm { position:absolute; left:0; right:0; bottom:0; height:36px; display:flex; align-items:center; padding:3px 8px 0; background:#07080d; font:600 21px/1 var(--label); letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; }
+.tile.sel { box-shadow:0 0 0 3px var(--brass), 0 0 18px var(--brass); }
+.tile.sel .art { opacity:1; }
+.types { display:flex; flex-wrap:wrap; gap:10px; }
+.types .btn.sel { color:var(--brass); box-shadow:0 0 0 3px var(--brass), 0 0 18px var(--brass); }
+
+/* an invite to me (TV: the FRIEND INVITE screen): a solid band with brass rules */
+.inv { background:#0d1020; border-block:3px solid var(--brass); padding:16px 16px 18px; text-align:center; display:flex; flex-direction:column; gap:10px; margin:0 -16px; }
+.inv .who { font:400 34px/1.05 var(--display); text-transform:uppercase; }
+.inv .what { font:500 17px/1.4 var(--body); color:var(--text); }
+.inv .what b { color:var(--brass); font-weight:700; }
+.inv .t { font:800 17px/1 var(--mono); color:var(--brass); }
+/* FORGET ME, armed: red edge + TAP AGAIN (no pop-up), what goes, in one line */
+.danger { border:3px solid var(--hot); border-radius:8px; padding:14px; display:flex; flex-direction:column; gap:12px; background:color-mix(in srgb, var(--hot) 10%, #0d1020); }
+.danger p { font:500 16px/1.45 var(--body); color:var(--text); }
+.tick b.s { font:600 18px/1.3 var(--body); letter-spacing:0; text-transform:none; }
+.game .rec { display:block; margin-top:5px; }
+.foot { display:grid; grid-template-columns:auto minmax(0, 1fr); gap:12px; align-items:stretch; }
+.foot .btn.sm { min-height:56px; }
+.t { font:800 17px/1 var(--mono); color:var(--brass); }
+.btn .t { font-size:18px; color:inherit; margin-top:-3px; }
+.status { font:500 16px/1.3 var(--body); color:var(--text); text-align:center; }
+.status em { font-style:normal; color:var(--p4); font-weight:700; }
+
+/* ---------------------------------------------------------------- build additions (W24) */
+[hidden] { display:none !important; }
+button { font:inherit; color:inherit; background:none; border:0; padding:0; margin:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+a { -webkit-tap-highlight-color:transparent; }
+button.btn { width:100%; }
+.row button.btn.sm, .acts button.btn.sm, .backrow button.btn, .foot button.btn.sm { width:auto; }
+.btn:disabled { opacity:.45; cursor:default; }
+.btn:focus-visible, .tap:focus-visible, .seat:focus-visible, .tile:focus-visible, .tabs a:focus-visible, .more:focus-visible,
+.toggle button:focus-visible, .tick:focus-within { outline:3px solid var(--brass); outline-offset:3px; }
+.tap { cursor:pointer; background:none; }
+.tabs a { cursor:pointer; }
+.s5 { --c:#a855f7; } .s6 { --c:#f97316; } .s7 { --c:#06b6d4; } .s8 { --c:#ef4444; }
+.seat { cursor:pointer; width:100%; color:var(--text); }
+.seat.mine { box-shadow:0 0 0 3px var(--brass), 0 0 22px color-mix(in srgb, var(--c) 60%, transparent), inset 0 0 0 2px var(--c); }
+.seat[disabled] { cursor:default; }
+.tables { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.tables .btn.sm { width:auto; min-width:56px; }
+.tables .btn.sm.on { background:var(--gold); background-clip:padding-box; color:#1a1300; }
+.where { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.where .btn.sm { width:auto; }
+/* the nickname field: a real input drawn as the mockup's typed line */
+input.typed { display:block; width:100%; background:transparent; border:0; border-bottom:2px solid var(--line); border-radius:0; color:var(--text);
+  outline:none; caret-color:var(--c, var(--brass)); padding:4px 0 0; }
+input.typed::placeholder { color:var(--dim); opacity:.55; }
+input.typed:focus { border-bottom-color:var(--c, var(--brass)); }
+.tick { position:relative; cursor:pointer; }
+.tick input { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
+/* a one-line message under the job (an error in red, a done in green) */
+.msg { font:600 16px/1.4 var(--body); text-align:center; color:#ff8a8a; }
+.msg.ok { color:var(--p4); }
+.msg:empty { display:none; }
+.empty { font:500 16px/1.45 var(--body); color:var(--text); text-align:center; padding:16px 12px; }
+.more { width:100%; cursor:pointer; background:none; }
+.tile { cursor:pointer; border:0; padding:0; width:100%; display:block; color:var(--text); }
+.tile .nm { text-align:left; }
+.row .btn.sm .t { font-size:16px; }
+/* a setting being changed: the field and its SAVE on one row */
+.edit { display:grid; grid-template-columns:minmax(0, 1fr) auto; gap:8px; align-items:center; padding:10px 12px; border-top:1px solid var(--line); }
+.edit input { min-height:48px; width:100%; min-width:0; background:#07080d; border:2px solid var(--line); border-radius:6px; padding:6px 10px 2px; color:var(--text);
+  font:600 24px/1 var(--label); letter-spacing:.06em; text-transform:uppercase; outline:none; }
+.edit input[type=email] { text-transform:none; font:500 17px/1.2 var(--body); letter-spacing:0; padding:6px 10px; }
+.edit input:focus { border-color:var(--brass); }
+.pick { width:100%; text-align:left; cursor:pointer; color:var(--text); }
+.pick.lit { background:color-mix(in srgb, var(--brass) 12%, #0d1020); box-shadow:inset 4px 0 0 var(--brass); }
+.toggle { display:grid; }
+.toggle button { display:flex; align-items:center; justify-content:center; height:48px; background:var(--steel); color:var(--text); transform:skewX(-12deg);
+  box-shadow:inset 0 0 0 1px var(--line); font:600 22px/1 var(--label); letter-spacing:.12em; }
+.toggle button > i { transform:skewX(12deg); font-style:normal; padding-top:3px; }
+.toggle button.on { background:var(--gold); color:#1a1300; box-shadow:none; }
+.inv + .inv { margin-top:-16px; border-top:0; }
+.btn .n:empty { display:none; }
+.danger .btn { width:100%; }
+.game .rk + .rec, .game .words + .rec { margin-top:4px; }
+
+/* ---------------------------------------------------------------- the seat landing (W44b, docs/ux/journey) */
+/* the seat a QR opened, big (mockup phone.html .seatbig) */
+.seatbig { display:flex; justify-content:center; padding:0 6px; }
+.seatbig .seat { width:200px; min-height:150px; cursor:default; }
+.tap.armed { color:var(--hot); }
+.young { display:flex; flex-direction:column; gap:12px; }

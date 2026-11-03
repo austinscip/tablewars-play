@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07080d">
+<meta name="robots" content="noindex">
+<title>Sign In · Table Wars</title>
+<!-- THE PLAYER SITE: what a Table Wars seat QR opens (/s/<CODE>?seat=S) on any internet, mobile data included.
+     Plain static files: every font and picture is in this folder. 404.html is this same page (GitHub Pages
+     serves it for /s/<CODE>), so the base below points the files at the folder whatever the address is. -->
+<script>
+  (function () {
+    var p = location.pathname, m = p.match(/^(.*?\/)(?:s|link)(?:\/[^\/]*)?\/?$/);
+    document.write('<base href="' + (m ? m[1] : p.replace(/[^\/]*$/, '')) + '">');
+  })();
+</script>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app" class="pg"><div class="bug"><b><i>TABLE WARS</i></b><span><i>SIGN IN</i></span></div></main>
+<script src="config.js"></script>
+<script src="landing.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

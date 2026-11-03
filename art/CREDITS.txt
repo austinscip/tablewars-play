@@ -1,0 +1,6 @@
+Pictures in this folder (all CC0 1.0, public domain; no attribution required):
+- rubygold-frame-bevel.webp, rubygold-frame-round.webp, rubygold-gem-ruby-diamond.webp: Ruby & Gold UI Pack
+  by JellyCat, https://opengameart.org/content/ruby-gold-ui-pack (CC0), cut and resized by Table Wars.
+- brushed-gold.webp: gradient-mapped from Metal009, https://ambientcg.com (CC0).
+- concrete-black.webp: darkened from Concrete031, https://ambientcg.com (CC0).
+Fonts (fonts/): SIL Open Font License 1.1, see fonts/OFL.txt.
