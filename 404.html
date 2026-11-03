@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <script>/* the page is served for /s/<CODE> too (GitHub Pages 404.html): every file loads from the site's own folder */
+  (function () { var p = location.pathname, i = p.indexOf('/s/'); document.write('<base href="' + (i >= 0 ? p.slice(0, i + 1) : p.replace(/[^/]*$/, '')) + '">'); })();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07080d">
