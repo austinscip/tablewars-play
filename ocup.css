@@ -1,0 +1,25 @@
+/* C3 THE ONLINE CUP on the player site: the site's own look (gift.css cards, style.css boards and rows). */
+.vpick { display:flex; flex-direction:column; gap:10px; }
+.vpick button { display:grid; grid-template-columns:minmax(0, 1fr) auto; align-items:center; gap:10px; min-height:60px; padding:10px 14px; text-align:left;
+  background:#0d1020; color:var(--text); border:2px solid var(--line); border-radius:8px; cursor:pointer; }
+.vpick button b { font:600 22px/1.05 var(--label); letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vpick button small { font:600 15px/1.2 var(--body); color:var(--dim); white-space:nowrap; }
+.vpick button.on { border-color:var(--brass); box-shadow:0 0 0 2px var(--brass); background:color-mix(in srgb, var(--brass) 10%, #0d1020); }
+.vpick button.on small { color:var(--brass); }
+.pth .row b { white-space:normal; line-height:1.1; }
+.pth .r { font:800 15px/1 var(--mono); color:var(--brass); }
+.pth .row.now { background:color-mix(in srgb, var(--brass) 12%, #0d1020); box-shadow:inset 4px 0 0 var(--brass); }
+.obest { text-align:center; font:600 20px/1.2 var(--label); letter-spacing:.06em; color:#fff; }
+.obest em { font-style:normal; color:var(--brass); }
+.whole h3 { margin:18px 0 6px; font:600 20px/1 var(--label); letter-spacing:.12em; color:var(--brass); text-align:center; }
+.whole .mt { display:grid; grid-template-columns:minmax(0, 1fr); padding:8px 12px; border-top:1px solid var(--line); }
+.whole .mt .s { display:flex; justify-content:space-between; gap:8px; font:600 18px/1.3 var(--label); letter-spacing:.04em; text-transform:uppercase; }
+.whole .mt .s small { font:500 14px/1.3 var(--body); color:var(--dim); text-transform:none; white-space:nowrap; }
+.whole .mt .s.w { color:var(--brass); }
+.whole .mt .s.l { color:var(--dim); }
+.whole .mt.me { background:color-mix(in srgb, var(--brass) 10%, #0d1020); }
+.whole .gt { padding:6px 12px; font:700 14px/1 var(--mono); letter-spacing:.12em; color:var(--dim); background:#090b14; }
+.place { text-align:center; font:400 64px/1 var(--display); color:var(--brass); }
+/* C3b: the cup lists' rows are links, drawn like the site's rows (no link blue, no underline) */
+.board a.row { color:inherit; text-decoration:none; }
+.board a.row b { color:var(--brass); }

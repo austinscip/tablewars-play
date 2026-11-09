@@ -1,0 +1,13 @@
+/* C5 THE TEAM CUP on the player site: the site's own look (gift.css cards, style.css boards and rows, ocup.css). */
+.tpay { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.tpay button { min-height:72px; padding:10px; background:#0d1020; color:var(--text); border:2px solid var(--line); border-radius:8px; cursor:pointer; text-align:center; }
+.tpay button b { display:block; font:600 22px/1.05 var(--label); letter-spacing:.06em; color:#fff; }
+.tpay button small { display:block; margin-top:4px; font:600 15px/1.2 var(--body); color:var(--dim); }
+.tpay button.on { border-color:var(--brass); box-shadow:0 0 0 2px var(--brass); background:color-mix(in srgb, var(--brass) 10%, #0d1020); }
+.tpay button.on small { color:var(--brass); }
+.trow .tg { font:700 14px/1 var(--mono); letter-spacing:.1em; color:var(--brass); white-space:nowrap; }
+.trow .tg.dim { color:var(--dim); }
+.tlink { word-break:break-all; font:600 15px/1.3 var(--mono); color:var(--brass); padding:10px 12px; }
+.tbench { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+.tbench .btn.sm { font-size:17px; min-height:44px; padding:6px 10px 2px; }
+.tscore { font:800 18px/1 var(--mono); color:var(--brass); white-space:nowrap; }

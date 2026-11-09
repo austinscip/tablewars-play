@@ -1,0 +1,32 @@
+/* F4 GIFT TIME on the player site: style.css's look (the Ruby & Gold frames, the gold plates, the fields), a few
+   additions for the gift. One column, 16 px smallest text, 48 px smallest tap target. */
+.gpick { display:grid; grid-template-columns:1fr; gap:10px; padding:12px; }
+.gpick .btn { justify-content:space-between; }
+.gpick .btn .p { font:800 20px/1 var(--mono); margin-top:-3px; }
+.gpick .btn.sel { background:var(--gold); background-clip:padding-box; color:#1a1300; box-shadow:0 0 0 2px var(--brass), 0 0 16px rgba(255,203,61,.5); }
+.gfield { background:#0d1020; border:6px solid transparent; border-image:url('art/rubygold-frame-round.webp') 34 / 6px / 0 stretch;
+  padding:10px 14px 12px; display:flex; flex-direction:column; gap:6px; }
+.gfield label { font:600 20px/1 var(--label); letter-spacing:.08em; color:var(--brass); padding-top:3px; text-transform:uppercase; }
+.gfield input, .gfield textarea { display:block; width:100%; background:transparent; border:0; border-bottom:2px solid var(--line); border-radius:0;
+  color:var(--text); outline:none; padding:4px 0 2px; font:600 26px/1.25 var(--label); letter-spacing:.06em; text-transform:uppercase; }
+.gfield textarea { font:500 18px/1.4 var(--body); letter-spacing:0; text-transform:none; resize:none; min-height:56px; }
+.gfield input:focus, .gfield textarea:focus { border-bottom-color:var(--brass); }
+.gfield small { font:500 16px/1.3 var(--body); color:var(--dim); }
+.gcard { background:#0d1020; border:6px solid transparent; border-image:url('art/rubygold-frame-round.webp') 34 / 6px / 0 stretch; border-radius:8px;
+  padding:16px 14px 18px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
+.gcard .for { font:400 40px/1.05 var(--display); text-transform:uppercase; }
+.gcard .what { font:500 18px/1.4 var(--body); }
+.gcard .what b { color:var(--brass); font-weight:700; }
+.gcard .note { font:500 17px/1.4 var(--body); color:var(--text); font-style:italic; overflow-wrap:anywhere; }
+.gcode { font:800 34px/1 var(--mono); letter-spacing:.08em; color:#1a1300; background:var(--gold); padding:14px 16px 10px; border-radius:6px; white-space:nowrap; }
+.gleft { font:600 24px/1 var(--label); letter-spacing:.08em; text-transform:uppercase; color:var(--text); padding-top:3px; }
+.gleft b { color:var(--brass); font-weight:600; }
+.ghow { font:500 16px/1.45 var(--body); color:var(--text); text-align:left; display:flex; flex-direction:column; gap:6px; padding:0 4px; }
+.ghow b { color:var(--brass); font-weight:700; }
+.glink { font:500 16px/1.35 var(--mono); color:var(--dim); overflow-wrap:anywhere; text-align:center; }
+.gwait { display:flex; align-items:center; justify-content:center; gap:12px; font:600 22px/1 var(--label); letter-spacing:.08em; text-transform:uppercase; padding:18px 0; }
+.gwait i { width:26px; height:26px; border-radius:50%; border:4px solid var(--line); border-top-color:var(--brass); animation:gsp .9s linear infinite; }
+@keyframes gsp { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .gwait i { animation:none; } }
+/* C2: the HOUSE CUP sign-up (cup.html) reuses the gift card */
+.cfee .for { font-size:34px; }

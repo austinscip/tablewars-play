@@ -8,7 +8,12 @@
 
    c = { venue, table, seat, color, nick, other (the seat's nickname, E2), elsewhere ({table, color, venue} E13),
          known ([{nick}] the other profiles this phone knows, E4), gem (the gem picture's address), armed, msg,
-         card (true: the page has MY CARD), backTo (BACK's screen), guest (make: the guest way is there) } */
+         card (true: the page has MY CARD), backTo (BACK's screen), guest (make: the guest way is there),
+         tag (W46 the name tag #27, shown next to the name on the phone), email (W46: the email sign-in is on) }
+
+   W46 "I ALREADY HAVE A PROFILE" (email code): the screens email / code / nomail / hasmail, and EmailFlow, the one
+   controller both pages use (the page hands it send + verify; it keeps the email, the 30 s RESEND wait, the 3 tries
+   and tells a wrong code from an expired one by the time since SEND, since Supabase answers both the same). */
 (() => {
   const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
   const SEAT_N = { BLUE: 1, PINK: 2, GOLD: 3, GREEN: 4, PURPLE: 5, ORANGE: 6, CYAN: 7, RED: 8 };
@@ -22,7 +27,8 @@
   const where = (c, withSeat = true) => `<div class="where"><span>${esc(tc(c.venue))}${c.table ? ` &middot; <em>Table ${esc(c.table)}${withSeat && c.color ? ` &middot; ${esc(word(c.color))}` : ''}</em>` : ''}</span></div>`;
   const back = (to) => `<div class="backrow"><button class="btn sm" data-go="${esc(to)}">&#9664; BACK</button></div>`;
   const msg = (c) => `<p class="msg${c.msg && c.msg.ok ? ' ok' : ''}" role="status">${c.msg ? esc(c.msg.text) : ''}</p>`;
-  const vcard = (c, small, name) => `<div class="vcard" style="--c:${cvar(c)}"><i></i><div><small>${esc(small)}</small><b id="ini">${esc(name)}</b></div></div>`;
+  const tagged = (name, tag) => `${esc(name)}${tag ? ` <em class="tag">#${esc(tag)}</em>` : ''}`;
+  const vcard = (c, small, name) => `<div class="vcard" style="--c:${cvar(c)}"><i></i><div><small>${esc(small)}</small><b id="ini">${tagged(name, c.tag)}</b></div></div>`;
   const seatSquare = (c) => `<div class="seatbig"><div class="seat s${n(c)}" aria-hidden="true"><div class="puck"></div><div class="pn">P${esc(c.seat)}</div><div class="name">${esc(c.color)}</div></div></div>`;
   const seatWords = (c) => `${word(c.color)} seat, P${c.seat}`;
 
@@ -45,7 +51,8 @@
     <div class="hl metal" id="lh">YOU&rsquo;RE ${esc(c.color)}</div>
     <p class="line" id="ll">A profile keeps your name, ranks and records.</p>
     ${msg(c)}
-    <div class="btns"><button class="btn primary" data-go="make" id="lMake">${gem(c)} MAKE A PROFILE</button><button class="btn" id="lGuest">PLAY AS A GUEST</button></div>`;
+    <div class="btns"><button class="btn primary" data-go="make" id="lMake">${gem(c)} MAKE A PROFILE</button><button class="btn" id="lGuest">PLAY AS A GUEST</button></div>
+    ${c.email ? '<button class="tap" id="lHave">I already have a profile</button>' : ''}`;
 
   // E4 NOT NICK?: ask, never make a profile by itself. The other profiles this phone knows come back with one tap.
   S.notme = (c) => `${back(c.backTo || 'seat')}${where(c)}
@@ -54,7 +61,8 @@
     ${msg(c)}
     <div class="btns"><button class="btn primary" data-go="make" id="lMakeNew">${gem(c)} MAKE A NEW PROFILE</button>${
       (c.known || []).map((k, i) => `<button class="btn" data-switch="${i}">PLAY AS ${esc(k.nick)}</button>`).join('')
-    }${c.color ? '<button class="btn" id="lGuest">PLAY AS A GUEST</button>' : ''}</div>`;
+    }${c.color ? '<button class="btn" id="lGuest">PLAY AS A GUEST</button>' : ''}</div>
+    ${c.email ? '<button class="tap" id="lHave">I already have a profile</button>' : ''}`;
 
   // 3b MAKE A PROFILE: nickname + 13 or older. Unticked: MAKE stays off and the guest way shows (E12).
   // c.color = the seat it signs in at (a seat QR or a tapped colour); c.guest = the guest way is there (a seat QR)
@@ -65,13 +73,18 @@
       <input class="typed" id="mk_ini" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Your nickname" placeholder="YOUR NAME">
       <div class="rule" id="mk_rule">3 to 10 letters or numbers.</div>
     </div>
+    ${c.email ? `<div class="field mail" style="--c:var(--brass)">
+      <div class="qh"><b>EMAIL</b><small class="opt">optional</small></div>
+      <input class="typed mail" id="mk_email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="160" aria-label="Your email (optional)" placeholder="you@example.com" value="${esc(c.mail || '')}"${c.mailLocked ? ' readonly' : ''}>
+      <div class="rule">${c.mailLocked ? 'Checked. This email signs you in.' : 'So you can get back in on another phone.'}</div>
+    </div>` : ''}
     <label class="tick"><input type="checkbox" id="mk_age"><i id="mk_box" aria-hidden="true"></i><span><b class="s">I am 13 or older</b></span></label>
     <p class="msg" id="mk_err" role="status"></p>
     <button class="btn primary" id="mk_go" disabled>${gem(c)} MAKE MY PROFILE</button>
     <div class="young" id="mk_young">${c.guest
       ? '<p class="line dim">You can still play as a guest.</p><button class="btn" id="lGuest">PLAY AS A GUEST</button>'
       : '<p class="line dim">Under 13? You can still play as your colour.</p>'}</div>
-    <p class="line dim" id="mk_keep">We keep your nickname and your games. Never your real name, email or phone.</p>`;
+    <p class="line dim" id="mk_keep">${c.email ? 'We keep your nickname and your games. An email only signs you in.' : 'We keep your nickname and your games. Never your real name, email or phone.'}</p>`;
 
   // AFTER PLAY or MAKE: you're in. No rank before a game is picked (Austin 2026-11-02, decision 2).
   S.in = (c) => `${bug(c.table ? `TABLE ${c.table}` : 'SIGN IN')}${where(c)}
@@ -111,6 +124,44 @@
       `<div class="puck"></div><div class="pn">P${esc(s.seat)}</div><div class="name">${esc(s.nickname || s.color)}</div></button>`).join('')}</div>
     ${msg(c)}`;
 
+  // W46 I ALREADY HAVE A PROFILE (purpose signin) / MAKE with an email (make) / MY CARD's email (attach): the email
+  S.email = (c) => `${back(c.backTo || 'seat')}${where(c)}
+    <div class="hl metal" id="lh">${c.purpose === 'attach' ? (c.had ? 'CHANGE YOUR EMAIL' : 'ADD YOUR EMAIL') : 'I ALREADY HAVE A PROFILE'}</div>
+    <p class="line" id="ll">${c.purpose === 'attach' ? 'So you can get back in on another phone. We send a 6-digit code to check it.' : 'Type the email on your profile. We send you a 6-digit code.'}</p>
+    <div class="field mail" style="--c:var(--brass)">
+      <div class="qh"><b>EMAIL</b></div>
+      <input class="typed mail" id="em_in" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="160" aria-label="Your email" placeholder="you@example.com" value="${esc(c.mail || '')}">
+    </div>
+    ${msg(c)}
+    <button class="btn primary" id="emSend">${gem(c)} SEND MY CODE</button>`;
+
+  // W46 CHECK YOUR EMAIL: the 6 numbers; RESEND after 30 s; a different email; wrong (3 tries) / expired
+  S.code = (c) => `${back(c.backTo || 'email')}${where(c)}
+    <div class="hl metal" id="lh">CHECK YOUR EMAIL</div>
+    <p class="line" id="ll">We sent a 6-digit code to <b>${esc(c.hint)}</b>.</p>
+    <div class="field" style="--c:var(--brass)">
+      <div class="qh"><b>CODE</b><small class="opt">6 numbers</small></div>
+      <input class="typed code" id="cd_in" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" aria-label="The code from your email" placeholder="000000"${c.locked ? ' disabled' : ''}>
+    </div>
+    ${msg(c)}
+    <button class="btn primary" id="cdGo"${c.locked ? ' disabled' : ''}>${gem(c)} ${esc(c.goWord || 'SIGN IN')}</button>
+    <div class="btns"><button class="btn" id="cdResend"${c.wait > 0 ? ' disabled' : ''}>${c.wait > 0 ? `RESEND IN <span id="cdWait">${c.wait}</span> S` : 'RESEND'}</button></div>
+    <button class="tap" id="cdOther">Use a different email</button>`;
+
+  // W46 the email has no profile (sign in): make one with it, or another email
+  S.nomail = (c) => `${back(c.backTo || 'email')}${where(c)}
+    <div class="hl metal" id="lh">NO PROFILE YET</div>
+    <p class="line" id="ll">No profile with <b>${esc(c.hint)}</b>. Make one?</p>
+    ${msg(c)}
+    <div class="btns"><button class="btn primary" id="nmMake">${gem(c)} MAKE A PROFILE</button><button class="btn" id="cdOther">USE A DIFFERENT EMAIL</button></div>`;
+
+  // W46 the email already has a profile (make with an email): sign in instead, or make it without the email
+  S.hasmail = (c) => `${back(c.backTo || 'make')}${where(c)}
+    <div class="hl metal" id="lh">YOU HAVE A PROFILE</div>
+    <p class="line" id="ll">That email already has a profile: <b>${tagged(c.found && c.found.nickname, c.found && c.found.tag)}</b>. Sign in instead?</p>
+    ${msg(c)}
+    <div class="btns"><button class="btn primary" id="hmSignin">${gem(c)} SIGN IN AS ${esc(c.found && c.found.nickname)}</button><button class="btn" id="hmNoMail">MAKE IT WITHOUT AN EMAIL</button></div>`;
+
   // PROFILES ARE OFF (family mode, staff switch: E10) / the page can't reach the cloud
   S.off = (c) => `${bug('SIGN IN')}<div class="hl metal" id="lh">${esc(c.title || 'NO PROFILES TONIGHT')}</div><p class="line" id="ll">${esc(c.text || 'Play with your puck. Every game still shows on the TV.')}</p>`;
 
@@ -136,5 +187,50 @@
     upd();
   }
 
-  window.TWLanding = { screens: S, wireMake, esc, tc, word, SEAT_N };
+  // W46 the email code's state (one per page). io = { send(email), verify(email, code) -> {session, profile} };
+  // errors carry .why: offline | rate | bad_email | bad_code. ttl = the code's life in seconds (Supabase's
+  // "Email OTP Expiration", 3600 by default).
+  function EmailFlow(io, ttl = 3600) {
+    const f = { purpose: 'signin', email: '', hint: '', sentAt: 0, tries: 0, locked: false, session: null, found: null, msg: null, pending: null };
+    f.start = (purpose, pending) => Object.assign(f, { purpose, pending: pending || null, email: '', hint: '', sentAt: 0, tries: 0, locked: false, session: null, found: null, msg: null });
+    f.wait = () => (f.sentAt ? Math.max(0, 30 - Math.floor((Date.now() - f.sentAt) / 1000)) : 0);
+    f.say = (text, ok) => { f.msg = text ? { text, ok: !!ok } : null; };
+    f.send = async (email) => {
+      const em = String(email || '').trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(em)) { const e = new Error("That email doesn't look right."); e.why = 'bad_email'; throw e; }
+      const r = await io.send(em);
+      Object.assign(f, { email: em, hint: (r && r.email) || `${em.charAt(0)}•••@${em.split('@')[1]}`, sentAt: Date.now(), tries: 0, locked: false, msg: null, session: null, found: null });
+    };
+    f.verify = async (code) => {
+      try {
+        const r = await io.verify(f.email, String(code || '').replace(/\D/g, ''));
+        f.session = r.session; f.found = r.profile || null; f.msg = null;
+        return r;
+      } catch (e) {
+        if (e.why === 'bad_code') {
+          if (Date.now() - f.sentAt >= ttl * 1000) { f.locked = true; f.say('That code expired. Tap RESEND for a new one.'); }
+          else {
+            f.tries += 1;
+            if (f.tries >= 3) { f.locked = true; f.say('Too many tries. Tap RESEND for a new code.'); }
+            else f.say(`That code isn't right. ${3 - f.tries} ${3 - f.tries === 1 ? 'try' : 'tries'} left.`);
+          }
+        } else f.say(e.message);
+        throw e;
+      }
+    };
+    return f;
+  }
+  // the code screen's RESEND count down (both pages call it once)
+  function tickResend(doc, flow) {
+    setInterval(() => {
+      const b = doc.getElementById('cdResend'); if (!b) return;
+      const w = flow.wait();
+      if (w > 0) { const s = doc.getElementById('cdWait'); if (s) s.textContent = String(w); else b.innerHTML = `RESEND IN <span id="cdWait">${w}</span> S`; b.disabled = true; }
+      else if (b.disabled) { b.disabled = false; b.textContent = 'RESEND'; }
+    }, 1000);
+  }
+
+  // the phone pages' build stamp (BUILD STAMP LAW): SETTINGS on /me shows it; the player site's copy carries the same
+  const STAMP = 'ME-46·email-code';
+  window.TWLanding = { screens: S, wireMake, esc, tc, word, SEAT_N, tagged, EmailFlow, tickResend, STAMP };
 })();

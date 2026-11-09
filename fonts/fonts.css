@@ -25,6 +25,20 @@
   src: url('metal-mania-400-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+/* Metal Mania 400: the curly apostrophes (C2 / F4b, 2026-11-08). The font's own U+2019 / U+2018 glyphs draw
+   nothing a title shows: "CAN\2019T" read as "CANT", the capitals round it reach ~80 units over the small tick:
+   T's crossbar both ways), so every title's curly apostrophe uses this file: Metal Mania's own straight apostrophe
+   alone, mapped to U+2018, U+2019 and U+2032, moved 60 units right in a 300-unit advance so no capital beside it covers
+   it (fontTools subset, the same OFL licence). Declared after the two faces above, so for these three characters it is
+   the one the browser uses (the last rule wins). Shell titles use the curly apostrophe. */
+@font-face {
+  font-family: 'Metal Mania';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('metal-mania-400-apos.woff2') format('woff2');
+  unicode-range: U+2018-2019, U+2032;
+}
 /* Teko 500-700 latin */
 @font-face {
   font-family: 'Teko';
