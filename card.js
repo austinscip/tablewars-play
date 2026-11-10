@@ -8,9 +8,9 @@
          email (n•••@gmail.com | null), emailOn, qr (the friend QR picture's address | null), tile(slug) -> address,
          gem (address), formats ({slug: [{id, label}]}), s (the page's state: armed, undo, editing, showAll, moreGames,
          picked, pickedFmt, screenFrom), msgLine(), signIn (SIGN IN's screen | null), more (MORE's screen | null),
-         stamp (a line under SETTINGS | null) }
+         stamp (a line under SETTINGS | null), nights (G2 YOUR NIGHTS: the cloud's list, the player site only | undefined) }
    io = { act(action, args, okMsg) -> Promise<bool>, go(screen), render(), say(text, ok), saveNick(v) -> Promise,
-          standUp() -> Promise, forgetNow() -> Promise, emailEdit() }
+          standUp() -> Promise, forgetNow() -> Promise, emailEdit(), share(night) -> Promise (G2 SHARE) }
 
    myGames(card, bests): MY CARD's records words for a page with no box (runtime/records.py my_games, the same
    rule; pinned equal by tests/test_w46_player_card.py). */
@@ -78,7 +78,62 @@
       ${k.error ? `<p class="msg">${esc(k.error)}</p>` : ''}
       ${games ? `<div class="board" id="myGames"><div class="rbtitle">MY GAMES<span class="tlinks"><button class="tlink" data-go="rivals" id="rivBtn">RIVALS</button><button class="tlink" data-go="bests" id="bestBtn">BESTS</button></span></div>${games}</div>` : ''}
       ${cups ? `<div class="board" id="myCups"><div class="rbtitle">MY CUP PLACES</div>${cups}</div>` : ''}
-      ${seasons ? `<div class="board" id="mySeasons"><div class="rbtitle">MY LEAGUE SEASONS</div>${seasons}</div>` : ''}`;
+      ${seasons ? `<div class="board" id="mySeasons"><div class="rbtitle">MY LEAGUE SEASONS</div>${seasons}</div>` : ''}
+      ${nightsBoard(k, 3)}`;
+  };
+
+  // G2 YOUR NIGHTS (Austin 2026-11-10, the seven-features page feature 3): each night a venue sent once it ended
+  // (4 AM), newest first; a tap opens that night's card; SHARE copies a public link to it (night.html?n=<id>)
+  const nightKey = (n) => `${n.loc}~${n.night}`;
+  const nightTitle = (d, venue) => `${d.day || ''} · ${venue || d.venue || ''}`;
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  function nightLine(d) {
+    const parts = [plural(int(d.games), 'game', 'games'), plural(int(d.wins), 'win', 'wins')];
+    if ((d.bests || []).length) parts.push(plural(d.bests.length, 'new best', 'new bests'));
+    if (d.crown) parts.push('King of the Table');
+    return parts.join(' · ');
+  }
+  function nightsBoard(k, max) {
+    if (!Array.isArray(k.nights)) return '';
+    const list = k.nights.slice(0, max || 30);
+    const rows = list.map((n) => `<button class="row pick" data-go="night/${esc(encodeURIComponent(nightKey(n)))}"><span><b>${esc(nightTitle(n.doc || {}, n.venue))}</b><small>${esc((n.doc || {}).date || '')} &middot; ${esc(nightLine(n.doc || {}))}</small></span><span class="rec dim">&#9654;</span></button>`).join('');
+    const more = max && k.nights.length > max ? `<span class="tlinks"><button class="tlink" data-go="nights" id="nightsAll">ALL ${k.nights.length}</button></span>` : '';
+    return `<div class="board" id="myNights"><div class="rbtitle">YOUR NIGHTS${more}</div>${rows || '<p class="empty">Play signed in: the next morning your night shows up here.</p>'}</div>`;
+  }
+  // one night's numbers (MY CARD's night and the shared page night.html draw the same rows). Only this player's own
+  // numbers: an opponent is a name the TV showed, never their record.
+  function nightRows(d) {
+    const r = [];
+    const row = (lbl, val, sub) => r.push(`<div class="row"><span><b>${esc(lbl)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span><span class="rec">${esc(val)}</span></div>`);
+    row('Games', String(int(d.games)));
+    row('Wins', String(int(d.wins)));
+    if (int(d.losses)) row('Losses', String(int(d.losses)));
+    if (int(d.ties)) row('Ties', String(int(d.ties)));
+    if (int(d.forfeit_wins)) row('Won by forfeit', String(int(d.forfeit_wins)));
+    if (int(d.forfeit_losses)) row('Lost by forfeit', String(int(d.forfeit_losses)));
+    if (int(d.quits)) row('Quit', String(int(d.quits)));
+    if (int(d.they_quit)) row('They quit', String(int(d.they_quit)));
+    for (const b of d.bests || []) row(`New best · ${word(b.game || '').replace(/\b\w/g, (x) => x.toUpperCase())}${b.variant ? ` ${b.variant}` : ''}`, b.number || '');
+    for (const h of d.h2h || []) {
+      const all = h.all ? `${int(h.all.w)}${dash}${int(h.all.l)}${int(h.all.d) ? `${dash}${int(h.all.d)}` : ''} all time` : '';
+      row(`vs ${h.name} tonight`, `${int(h.w)}${dash}${int(h.l)}${int(h.d) ? `${dash}${int(h.d)}` : ''}`, all);
+    }
+    if (d.crown) row('King of the Table', `${int(d.crown.wins)} WIN${int(d.crown.wins) === 1 ? '' : 'S'}`);
+    for (const m of d.milestones || []) row(String(m), '');
+    return r.join('');
+  }
+  function nightCard(d, venue, who) {
+    return `<div class="board" id="nightCard"><div class="rbtitle">${esc(nightTitle(d, venue))}</div>` +
+      `<div class="row"><span><small>${who ? `${esc(who)} &middot; ` : ''}${esc(d.date || '')} &middot; numbers only</small></span></div>${nightRows(d)}</div>`;
+  }
+  C.nights = (k) => `${BUG('YOUR NIGHTS')}${nightsBoard(k, 0)}${BACK('card')}`;
+  C.night = (k, key) => {
+    const n = (k.nights || []).find((x) => nightKey(x) === decodeURIComponent(key || ''));
+    if (!n) return `${BUG('YOUR NIGHT')}<p class="empty">That night is not on your profile.</p>${BACK('card')}`;
+    return `${BUG('YOUR NIGHT')}${nightCard(n.doc || {}, n.venue)}
+      ${k.msgLine()}
+      <div class="foot"><button class="btn sm" data-go="card">&#9664; BACK</button><button class="btn primary" data-share="${esc(nightKey(n))}" id="nightShare">SHARE</button></div>
+      <p class="line dim">SHARE copies a link to this card. Anyone with the link sees these numbers, nothing else.</p>`;
   };
 
   // PH-4 FRIENDS
@@ -282,6 +337,11 @@
     if (d.home) { s.editing = null; io.act('settings', { home_loc: d.home }, 'Saved.'); io.render(); return true; }
     if (d.show) { io.act('settings', { show_venue: d.show === '1' }, 'Saved.'); return true; }
     if (t.id === 'emEdit') { io.emailEdit(); return true; }
+    if (d.share && io.share) {
+      const n = (k.nights || []).find((x) => nightKey(x) === d.share);
+      if (n) { t.disabled = true; await io.share(n); t.disabled = false; }
+      return true;
+    }
     if (t.id === 'standUp') {
       if (s.armed !== 'signout') { s.armed = 'signout'; io.render(); return true; }
       s.armed = null;
@@ -399,5 +459,5 @@
     return myGames(card, bests);
   }
 
-  window.TWCard = { screens: C, click, disarm, myGames, fromView, R, GAME, TILE, ONLINE, left };
+  window.TWCard = { screens: C, click, disarm, myGames, fromView, R, GAME, TILE, ONLINE, left, nightCard };
 })();

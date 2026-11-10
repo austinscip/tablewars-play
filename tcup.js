@@ -175,7 +175,8 @@
       for (const k of [...(t.boards || []), ...(t.decider ? [t.decider] : [])]) {
         const m = doc.matches[k];
         const ent = m && m.sides && doc.ents[m.sides[s]];
-        if (ent && (ent.members || [])[0] === me.name) return m;
+        // T1: a MIXED cup's TEAM TRIVIA decider: the whole line-up plays it
+        if (ent && (m.team_trivia ? (ent.members || []).includes(me.name) : (ent.members || [])[0] === me.name)) return m;
       }
       return null;
     };
@@ -184,7 +185,7 @@
       const sc = score(t, s);
       const opp = vname(t.sides[1 - s]);
       const m = myBoard(t, s);
-      const mine = m ? `${m.decider ? 'The decider' : m.label}: ${m.status === 'done' ? (m.how === 'unneeded' ? 'not needed' : m.winner === s ? (m.missing ? 'you won: they had nobody for it' : 'you won') : (m.missing ? 'lost: nobody to play it' : 'you lost')) : m.status === 'playing' ? 'playing now' : m.status === 'called' ? `called at table ${(m.calls || {})[me.loc] || ''}` : 'next'}` : t.how === 'bye' ? 'A bye counts as a win' : 'You sat this one out';
+      const mine = m ? `${m.decider ? (m.team_trivia ? 'The decider, TEAM TRIVIA' : 'The decider') : m.label}: ${m.status === 'done' ? (m.how === 'unneeded' ? 'not needed' : m.winner === s ? (m.missing ? 'you won: they had nobody for it' : 'you won') : (m.missing ? 'lost: nobody to play it' : 'you lost')) : m.status === 'playing' ? 'playing now' : m.status === 'called' ? `called at table ${(m.calls || {})[me.loc] || ''}` : 'next'}` : t.how === 'bye' ? 'A bye counts as a win' : 'You sat this one out';
       const now = t.status !== 'done';
       return `<div class="row${now ? ' now' : ''}"><div><b>ROUND ${t.round}: ${now ? 'VS' : t.winner === s ? 'BEAT' : 'LOST TO'} ${esc(opp)}</b><small>${esc(mine)}${t.decider ? ' &middot; went to the decider' : ''}</small></div><span class="tscore">${sc[0]}-${sc[1]}</span></div>`;
     }).join('');

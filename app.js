@@ -119,6 +119,32 @@
         body: JSON.stringify({ p_token: token, p_action: 'mine', p_args: {} }) });
       mine.seasons = r2.ok ? ((await r2.json()).seasons || []) : [];
     } catch { mine.seasons = []; }
+    // G2 YOUR NIGHTS: each night a venue sent at 4 AM, newest first; a cloud without the nights SQL has none (no board)
+    try {
+      const r3 = await fetch(`${url}/rest/v1/rpc/tw_night_phone`, { method: 'POST', cache: 'no-store',
+        headers: { apikey: CFG.anonKey, Authorization: `Bearer ${CFG.anonKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_token: token, p_action: 'list', p_args: {} }) });
+      mine.nights = r3.ok ? ((await r3.json()).nights || []) : undefined;
+    } catch { mine.nights = undefined; }
+  }
+  // G2 SHARE: the night's public link (night.html?n=<id>), copied; a phone that cannot copy shows the link to copy
+  async function shareNight(n) {
+    const url = String(CFG.supabaseUrl || '').replace(/\/+$/, '');
+    let id = n.share;
+    if (!id) {
+      try {
+        const r = await fetch(`${url}/rest/v1/rpc/tw_night_phone`, { method: 'POST', cache: 'no-store',
+          headers: { apikey: CFG.anonKey, Authorization: `Bearer ${CFG.anonKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_token: token, p_action: 'share', p_args: { venue_loc: n.loc, night: n.night } }) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || !j.share) { say((j && j.message) || "Couldn't make the link. Try again."); return; }
+        id = n.share = j.share;
+      } catch { say("Can't reach Table Wars. Check your phone's internet."); return; }
+    }
+    const link = new URL(`night.html?n=${id}`, document.baseURI).href;
+    window.__site = { ...(window.__site || {}), shared: link };
+    try { await navigator.clipboard.writeText(link); say('Link copied. Paste it anywhere.', true); }
+    catch { say(`Copy this link: ${link}`, true); }
   }
 
   async function load() {
@@ -192,7 +218,7 @@
   const COLORS_OF = (n) => COLORS[((Number(n) || 1) - 1) % 8];
   const cs = { armed: null, undo: null, editing: null, showAll: false, moreGames: false, picked: null, pickedFmt: null, screenFrom: {} };
   const TABBED = { card: 'MY CARD', friends: 'FRIENDS', settings: 'SETTINGS' };
-  const CARD = ['card', 'friends', 'add', 'invites', 'invite', 'settings', 'rivals', 'bests'];
+  const CARD = ['card', 'friends', 'add', 'invites', 'invite', 'settings', 'rivals', 'bests', 'nights', 'night'];
   const say = (text, ok) => { lastMsg = { text, ok: !!ok }; const m = document.querySelector('.msg'); if (m) { m.textContent = text; m.classList.toggle('ok', !!ok); } };
   const msgLine = () => { const m = lastMsg; lastMsg = null; return `<p class="msg${m && m.ok ? ' ok' : ''}" role="status">${m ? L.esc(m.text) : ''}</p>`; };
   function friendQR(fc) {
@@ -209,7 +235,7 @@
     return { nick: p.nickname || '', tag: p.tag, venue: p.venue || '', seat: at ? { table: at.table, color: COLORS_OF(at.seat) } : null,
       cv: mine, mine: { ...C.fromView(mine), cups: (mine && mine.cups) || [] }, online: true, error: null, friendCode, email: p.email || null, emailOn: true,
       qr: p.friend_code ? friendQR(p.friend_code) : null, tile: (t) => `tiles/${t}.jpg`, gem: GEM, formats: window.TW_FORMATS || {},
-      s: cs, msgLine, signIn: code && seatQ ? 'seat' : null, more: null, stamp: `Version ${L.STAMP}` };
+      s: cs, msgLine, signIn: code && seatQ ? 'seat' : null, more: null, stamp: `Version ${L.STAMP}`, nights: mine ? mine.nights : undefined };
   };
   for (const n of CARD) S[n] = (arg) => C.screens[n](kc(), arg);
   S.none = () => L.screens.off({ title: 'SCAN YOUR SEAT CARD', text: friendCode
@@ -238,6 +264,7 @@
     },
     emailEdit: () => { EF.start('attach'); mailDraft = ''; go('email'); },
     codeUsed: () => { friendCode = ''; },
+    share: (n) => shareNight(n),
   };
 
   function go(screen) { if (location.hash !== `#${screen}`) location.hash = screen; else render(); }
@@ -256,7 +283,7 @@
     if (screenNow !== name) {
       cs.armed = null; cs.editing = null; cs.showAll = false; cs.moreGames = false;
       // a MY CARD page opens with fresh friends and invites (mobile data: one small call)
-      if (['card', 'friends', 'invites', 'add', 'rivals', 'bests'].includes(name) && mine) { try { await reloadMine(); } catch { /* the cached view */ } }
+      if (['card', 'friends', 'invites', 'add', 'rivals', 'bests', 'nights'].includes(name) && mine) { try { await reloadMine(); } catch { /* the cached view */ } }
     }
     if (name === 'add' && screenNow && screenNow !== 'add') cs.screenFrom.add = ['card', 'friends'].includes(screenNow) ? screenNow : 'friends';
     screenNow = name;
@@ -270,7 +297,7 @@
     $('app').dataset.screen = name;
     $('app').dataset.view = view || name;
     if (name === 'make') L.wireMake(document);
-    document.title = `${TABBED[name] || (name === 'guest' ? 'GUEST' : (name === 'make' ? 'NEW PROFILE' : ({ add: 'ADD A FRIEND', invites: 'INVITES', invite: 'INVITE', rivals: 'RIVALS', bests: 'BESTS' })[name] || 'SIGN IN'))} · Table Wars`;
+    document.title = `${TABBED[name] || (name === 'guest' ? 'GUEST' : (name === 'make' ? 'NEW PROFILE' : ({ add: 'ADD A FRIEND', invites: 'INVITES', invite: 'INVITE', rivals: 'RIVALS', bests: 'BESTS', nights: 'YOUR NIGHTS', night: 'YOUR NIGHT' })[name] || 'SIGN IN'))} · Table Wars`;
     const ci = $('cd_in'); if (ci && !ci.disabled) ci.focus();
     window.__site = { screen: name, view: view || name, lob, mine };
   }
